@@ -376,32 +376,6 @@ curl -sS http://127.0.0.1:8080
 
 ---
 
-## G — SUID-аудит
-
-Найти все файлы с SUID и убрать **подложенный** бит (не трогать штатные `/usr/bin/passwd`, `sudo` и т.п. без понимания).
-
-```bash
-sudo find / -xdev -perm /4000 -type f 2>/dev/null | tee /root/suid-audit.txt
-```
-
-Типичный «подлог» в лабе: копия шелла или утилита в `/tmp`, `/opt`, `/srv`.
-
-```bash
-# пример снятия SUID только с постороннего файла
-sudo chmod u-s /path/to/planted-binary
-```
-
-Повторно:
-
-```bash
-sudo find /srv /tmp /opt /home -perm /4000 -type f 2>/dev/null
-# пусто — ок
-```
-
-Фиксируйте список «до/после» для отчёта.
-
----
-
 ## H — Sudo: только `docker restart bucket-scanner`
 
 `system_dev` может перезапустить **только** этот контейнер, без пароля, **без** `*` в команде.
@@ -451,5 +425,4 @@ sudo -u system_dev sudo docker restart other-name
 - [ ] `auditor` не в `devteam`, `r-x` на проект, `touch` запрещён
 - [ ] `dev3`: rbash, нет `cd`, нет `/bin/ls`, нет смены `PATH`, нет `>`
 - [ ] контейнер `bucket-scanner` запущен, образ от `scratch`, бинарь static
-- [ ] SUID-подлог снят (`find -perm /4000`)
 - [ ] sudoers: одна точная команда, NOPASSWD, без wildcard

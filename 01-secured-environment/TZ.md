@@ -12,6 +12,4 @@
 
 **F — Приложение:** простая C-программа (`bucket-scanner`, работает постоянно), multi-stage Docker build со статической линковкой, `FROM scratch`, контейнер с явным именем
 
-**G — SUID-аудит:** найти и убрать подложенный SUID-бит через `find -perm /4000`
-
 **H — Sudo:** `system_dev` — только `docker restart bucket-scanner`, NOPASSWD, без wildcard

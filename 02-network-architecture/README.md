@@ -2,7 +2,8 @@
 
 Продолжение блока 1. Хост — «офисный» Linux с сегментами **dev**, **office**, **WAN**. Контейнер `bucket-scanner` сидит в L2-сети разработчиков `192.168.10.0/24` без NAT.
 
-**Полное видео:** [блок-2.mp4](./block-2.mp4) (~19 мин)
+**Условия кейса:** [TZ.md](./TZ.md)  
+**Полное видео:** [block-2.mp4](./block-2.mp4) (~19 мин)
 
 Клипы из записи вставлены в разделы ниже. Все файлы лежат в [`gifs/`](./gifs/).
 
@@ -16,8 +17,7 @@
 | `veth-dev` (в netns) | `10.200.0.2/30` |
 | `veth-host` (хост) | `10.200.0.1/30` |
 | `bond-office` | `10.0.0.5/24` |
-| `enp0s3` IPv4 | WAN (как выдаст провайдер/VM) |
-| `enp0s3` IPv6 ULA | `fd00:10:200::1/64` |
+| WAN | как выдаст провайдер/VM |
 | WireGuard `wg0` | `10.8.0.1/24` |
 
 `br0` и `bond0` **на хосте без IP**. IP шлюза разработчиков живёт только внутри namespace `dev-router`.
@@ -231,7 +231,7 @@ sudo ip link set eth2 up
 
 </div>
 
-В VM имена могут быть `enp0s8`/`enp0s9` — смотрите `ip -br link`. Постоянная конфигурация — Netplan (пункт O).
+В VM имена могут быть `enp0s8`/`enp0s9` — смотрите `ip -br link`.
 
 **IP-less `br0`** объединяет:
 
@@ -431,139 +431,12 @@ Full-tunnel на клиенте: `AllowedIPs = 0.0.0.0/0, ::/0`. В отчёте
 
 ---
 
-## N — DNS / IPv6
+## Чеклист приёмки блока 2
 
-**systemd-resolved с кэшем:**
-
-`/etc/systemd/resolved.conf`:
-
-```ini
-[Resolve]
-DNS=1.1.1.1 8.8.8.8
-FallbackDNS=9.9.9.9
-DNSStubListener=yes
-Cache=yes
-```
-
-```bash
-sudo systemctl restart systemd-resolved
-resolvectl status
-```
-
-**Dual-stack на `enp0s3`:** IPv4 как есть + ULA `fd00:10:200::1/64`.
-
-```bash
-sudo ip -6 addr add fd00:10:200::1/64 dev enp0s3
-```
-
-Постоянно — через Netplan (O).
-
-**Тесты сбоев:**
-
-```bash
-# 1) несуществующий DNS
-dig @203.0.113.1 example.com +time=2 +tries=1
-
-# 2) блок UDP/53 (временно, затем вернуть правила)
-sudo nft insert rule inet filter output udp dport 53 drop
-dig example.com
-dig example.com +tcp
-sudo tcpdump -n -i enp0s3 port 53
-# снять блок:
-sudo nft delete rule inet filter output handle <N>
-```
-
-Фиксируйте в отчёте: UDP падает / таймаут, TCP/53 или DoT — если разрешены в output.
-
----
-
-## O — Persistence: Netplan + systemd
-
-### Netplan (хост)
-
-Пример `/etc/netplan/99-lab.yaml` (имена NIC проверьте):
-
-```yaml
-network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    enp0s3:
-      dhcp4: true
-      addresses:
-        - fd00:10:200::1/64
-    eth1: {}
-    eth2: {}
-    veth-host: {}
-  bonds:
-    bond-office:
-      interfaces: [eth1, eth2]
-      parameters:
-        mode: active-backup
-        mii-monitor-interval: 100
-      addresses:
-        - 10.0.0.5/24
-  bridges:
-    br0:
-      interfaces: [bond0]
-      dhcp4: false
-      accept-ra: false
-      # IP нет — намеренно
-```
-
-`bond0` и veth часто **нельзя** полностью описать в Netplan (netns, peer). Их поднимает unit ниже. Если Netplan ругается на `bond0` до создания линка — не включайте `bond0` в YAML, отдайте bridge enslaving скрипту.
-
-`netplan apply` только после проверки `netplan generate`.
-
-### systemd-юнит
-
-`/etc/systemd/system/lab-net.service`:
-
-```ini
-[Unit]
-Description=Lab netns, veth, bond, PBR, dnsmasq, nftables, wg
-Wants=network-online.target
-After=network-online.target docker.service
-Requires=nftables.service
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/usr/local/sbin/lab-net-up.sh
-ExecStop=/usr/local/sbin/lab-net-down.sh
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Скрипт `lab-net-up.sh` по порядку:
-
-1. `modprobe bonding`
-2. netns `dev-router`, veth, bond0 host+ns, адреса
-3. `br0`, enslaving `bond0`, `veth-b1`, `veth-scanner-host`
-4. `sysctl ip_forward`, `ip rule` / таблицы PBR
-5. dnsmasq в `dev-router`
-6. `nft -f /etc/nftables.conf`
-7. `wg-quick up wg0` (если не `wg-quick@wg0.service`)
-8. подключение veth в netns контейнера `bucket-scanner`
-
-```bash
-sudo chmod 750 /usr/local/sbin/lab-net-up.sh
-sudo systemctl enable --now lab-net.service
-sudo systemctl enable nftables wg-quick@wg0 docker
-```
-
----
-
-## Критерии приёмки после reboot
-
-Прогнать **после полного ребута**, без ручных команд (кроме клиента WG).
-
-| Критерий | Как проверить |
-|----------|----------------|
-| client1 получает DHCP от dnsmasq | `ip netns exec client1 ip -4 addr`; адрес из `192.168.10.10–50`; `ip route` через `192.168.10.1` |
-| failover veth1 → veth2 без потери пингов | с client1: `ping -c 50 192.168.10.1`; в другом окне `ip link set veth1 down`; разрыв не более 1–2 пакетов, затем ответы с того же IP |
-| SSH только из `10.0.0.x` | с офисного адреса — вход; с WAN/другой сети — timeout/drop (`nft monitor` / попытка с `enp0s3`) |
-| стажёр WG с ограниченным доступом | handshake `wg show`; ping `10.8.0.1` и `192.168.10.100`; **нет** маршрута `0.0.0.0/0`; интернет идёт мимо туннеля |
-
-Дополнительно: `docker ps` показывает `bucket-scanner`; `curl 192.168.10.100:8080` с client1.
+- [ ] `dev-router`: `bond0` `192.168.10.1/24`, `br0`/`bond0` на хосте без IP
+- [ ] `client1` получает DHCP из `192.168.10.10–50`, шлюз `192.168.10.1`
+- [ ] failover `veth1` → `veth2`: пинги к `192.168.10.1` живы
+- [ ] PBR: таблицы `t_dev`, `t_office`, `t_wan`, `ip rule` по source
+- [ ] `bond-office` `10.0.0.5/24`; контейнер `192.168.10.100/24` на L2, без NAT
+- [ ] nftables: policy drop; SSH только из `10.0.0.0/24`; WG UDP `51820` всем; DNAT `:8080` → scanner
+- [ ] стажёр: split-tunnel (`10.8.0.0/24` + сеть проекта); интернет мимо VPN

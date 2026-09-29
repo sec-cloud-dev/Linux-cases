@@ -1,0 +1,2 @@
+default via 192.168.10.1 dev eth
+192.168.10.0/24 dev eth proto kernel scope link src 192.168.10.100

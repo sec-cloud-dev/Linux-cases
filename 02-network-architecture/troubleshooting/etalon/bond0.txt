@@ -1,0 +1,4 @@
+Bonding Mode: fault-tolerance (active-backup)
+MII Polling Interval (ms): 100
+Up Delay (ms): 0
+Down Delay (ms): 0

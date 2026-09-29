@@ -1,0 +1,5 @@
+0:	from all lookup local
+32764:	from 10.0.0.0/24 lookup t_office
+32765:	from 10.200.0.0/30 lookup t_dev
+32766:	from all lookup main
+32767:	from all lookup default

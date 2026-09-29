@@ -1,0 +1,3 @@
+default via 10.200.0.1 dev veth-dev
+10.200.0.0/30 dev veth-dev proto kernel scope link src 10.200.0.2
+192.168.10.0/24 dev bond0 proto kernel scope link src 192.168.10.1

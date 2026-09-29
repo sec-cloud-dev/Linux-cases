@@ -1,25 +1,45 @@
 # Linux-cases
 
-Решения двух Linux-кейсов: администрирование, отказоустойчивость, безопасность и автоматизация.
+Решения Linux-кейсов: администрирование, отказоустойчивость, безопасность и автоматизация.
 
-Гифки лежат рядом с README каждого блока — на GitHub они открываются прямо в файле. Условия кейса — в `TZ.md` внутри папки блока.
+## Метод
 
-| Блок | О чём | Видео |
-|------|--------|--------|
-| [01 — Защищённая среда](./01-secured-environment/) | Пользователи, изоляция home, `/srv/project`, ACL, rbash, Docker `FROM scratch`, sudo | [TZ](./01-secured-environment/TZ.md) · [видео](./01-secured-environment/block-1.mp4) (~6:38) |
-| [02 — Сетевая архитектура](./02-network-architecture/) | netns `dev-router`, bonding/bridge, PBR, nftables, WireGuard | [TZ](./02-network-architecture/TZ.md) · [видео](./02-network-architecture/block-2.mp4) (~19 мин) |
+Каждый блок состоит из двух частей.
+
+**Сборка** — стенд поднимается руками, по ТЗ, которое написано до начала работы. Результат — запись одним дублем.
+
+**Трабалшутинг** — на собранном стенде скрипт вносит поломки, выбирая их случайно. Набор до запуска неизвестен. Стенд считается восстановленным не когда «пингуется», а когда текущее состояние полностью совпадает с заранее снятым эталоном: таблицы маршрутизации, правила фаервола, конфиги, маршруты внутри неймспейсов и контейнеров.
+
+## Блоки
+
+| Блок | О чём | Сборка | Трабалшутинг |
+|---|---|---|---|
+| **01 — Защищённая среда** | Пользователи, изоляция home, `/srv/project`, ACL, `rbash`, Docker `FROM scratch`, sudo | [ТЗ](01-secured-environment/TZ.md) · [видео ~6:38](01-secured-environment/block-1.mp4) | — |
+| **02 — Сетевая архитектура** | netns `dev-router`, bonding/bridge, PBR, nftables, WireGuard | [ТЗ](02-network-architecture/TZ.md) · [видео ~19 мин](02-network-architecture/block-2.mp4) | [разбор](02-network-architecture/troubleshooting/README.md) · [видео 13:19](https://github.com/sec-cloud-dev/Linux-cases/releases/tag/block2-troubleshooting) |
+
+Гифки лежат рядом с README каждого блока — на GitHub открываются прямо в файле. Условия кейса — в `TZ.md` внутри папки блока.
+
+## Структура
 
 ```
 Linux-cases/
 ├── README.md
 ├── 01-secured-environment/
 │   ├── TZ.md
-│   ├── README.md      ← гифки вставлены в разделы
+│   ├── README.md
 │   ├── block-1.mp4
 │   └── gifs/
 └── 02-network-architecture/
     ├── TZ.md
     ├── README.md
     ├── block-2.mp4
-    └── gifs/
+    ├── gifs/
+    └── troubleshooting/
+        ├── TZ.md          условия: вслепую, один дубль, критерий приёмки
+        ├── README.md      разбор прогона
+        ├── faults.md      каждая поломка: симптом, локализация, причина, фикс
+        ├── verify.sh      27 проверок: функциональные + дифф против эталона
+        ├── etalon/        снимки эталонного состояния
+        ├── break/         скрипт внесения поломок
+        └── gifs/
 ```

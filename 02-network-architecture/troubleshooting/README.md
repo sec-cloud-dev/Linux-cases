@@ -104,7 +104,7 @@
 
 8 из 8 найдено и починено. Один дубль, 13:19 после вырезания пауз. Финальный прогон — 27 проверок, все зелёные.
 
-📹 **[Полная запись решения](https://github.com/sec-cloud-dev/Linux-cases/releases/tag/block2-troubleshooting)**
+**[Полная запись решения](https://github.com/sec-cloud-dev/Linux-cases/releases/tag/block2-troubleshooting)**
 
 ## Файлы
 

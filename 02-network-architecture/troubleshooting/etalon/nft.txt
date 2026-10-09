@@ -4,7 +4,7 @@ table inet filter {
 		iif "lo" accept
 		ct state established,related accept
 		ip saddr 10.0.0.0/24 tcp dport 22 ct state established,new accept
-		ip saddr 192.168.31.32 tcp dport 22 ct state established,new accept
+		ip saddr @ADMIN_IP@ tcp dport 22 ct state established,new accept
 		udp dport 51820 accept
 		iifname "wg0" icmp type echo-request accept
 		iifname "wg0" icmp type echo-reply accept
@@ -27,7 +27,6 @@ table inet filter {
 		iifname "br-office" oifname "veth-host" accept
 		iifname "veth-host" oifname "br-office" accept
 		iifname "br-office" oifname "enp0s3" accept
-		ip saddr 10.0.0.0/24 ip daddr 192.168.10.100 tcp dport 8080 accept
 	}
 
 	chain output {
@@ -51,7 +50,6 @@ table ip nat {
 		oifname "enp0s3" ip saddr 192.168.10.0/24 masquerade
 		oifname "veth-host" ip saddr 10.0.0.0/24 masquerade
 		oifname "enp0s3" ip saddr 10.0.0.0/24 masquerade
-		oifname "veth-host" ip saddr 10.0.0.0/24 masquerade
 	}
 
 	chain DOCKER {

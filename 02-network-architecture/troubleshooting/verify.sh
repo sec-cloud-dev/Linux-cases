@@ -1,11 +1,23 @@
 #!/bin/bash
 pid=$(docker inspect -f '{{.State.Pid}}' bucket-scanner 2>/dev/null)
+
+# эталон лежит рядом со скриптом; ETALON_DIR — чтобы сверить с другим снимком
+ET=${ETALON_DIR:-$(dirname "$(readlink -f "$0")")/etalon}
+
+# WAN-адреса зависят от VM, в эталоне вместо них плейсхолдеры @WAN_*@
+WAN_IF=enp0s3
+WAN_GW=$(ip -4 route show table main default dev $WAN_IF | awk '{print $3; exit}')
+WAN_IP=$(ip -4 -o addr show dev $WAN_IF | awk '{sub("/.*", "", $4); print $4; exit}')
+WAN_NET=$(ip -4 route show table main dev $WAN_IF proto kernel scope link | awk '{print $1; exit}')
+ADMIN_IP=${ADMIN_IP:-192.168.31.32}   # хост админа, с которого разрешён SSH помимо офиса
 ok(){ echo "OK   $1"; }
 fail(){ echo "FAIL $1"; }
 
 # --- функциональные проверки ---
 
 ip netns exec client1 ping -c1 -W2 192.168.10.1   &>/dev/null && ok "шлюз 192.168.10.1"  || fail "шлюз 192.168.10.1"
+# ping -c1 при netem loss 25% зелёный в 56% случаев; 20 пакетов без потерь при 25% — практически исключено
+ip netns exec client1 ping -c20 -i0.2 -W1 -q 192.168.10.100 2>/dev/null | grep -q ' 0% packet loss' && ok "client1 → сканер: 20/20 без потерь" || fail "client1 → сканер: есть потери"
 ip netns exec client1 ping -c1 -W2 10.200.0.1     &>/dev/null && ok "хост 10.200.0.1"    || fail "хост 10.200.0.1"
 ip netns exec client1 ping -c1 -W3 8.8.8.8        &>/dev/null && ok "интернет по IP"     || fail "интернет по IP"
 ip netns exec client1 getent hosts google.com     &>/dev/null && ok "DNS резолв"         || fail "DNS резолв"
@@ -26,6 +38,9 @@ n=$(bridge link show | grep -c 'master br0')
 [ "$n" = "3" ] && ok "br0: три порта" || fail "br0: портов $n из 3"
 
 ip netns exec office1 ping -c1 -W2 10.0.0.5  &>/dev/null && ok "офис: шлюз 10.0.0.5" || fail "офис: шлюз 10.0.0.5"
+# полный кадр с DF: 1472 + 8 ICMP + 20 IPv4 = 1500. Ловит MTU 1300 на veth-b1 / veth-of
+ip netns exec client1 ping -M do -s 1472 -c1 -W2 192.168.10.100 &>/dev/null && ok "client1: MTU 1500 до сканера" || fail "client1: кадр 1500 с DF не проходит"
+ip netns exec office1 ping -M do -s 1472 -c1 -W2 10.0.0.5       &>/dev/null && ok "офис: MTU 1500 до шлюза"      || fail "офис: кадр 1500 с DF не проходит"
 ip netns exec office1 ping -c1 -W3 8.8.8.8   &>/dev/null && ok "офис: интернет"      || fail "офис: интернет"
 
 c=$(ip netns exec office1 curl -m5 -s -o /dev/null -w "%{http_code}" http://10.0.0.5:8080/ 2>/dev/null)
@@ -44,8 +59,13 @@ ip netns exec office1 ping -c1 -W2 10.200.0.1 &>/dev/null && ok "офис → х
 
 # --- сравнение с эталоном ---
 
+etalon(){
+  sed -e "s|@WAN_GW@|$WAN_GW|g" -e "s|@WAN_IP@|$WAN_IP|g" \
+      -e "s|@WAN_NET@|$WAN_NET|g" -e "s|@ADMIN_IP@|$ADMIN_IP|g" "$ET/$1.txt"
+}
 cmp_et(){
-  if diff -q <(eval "$2") "/root/etalon/$1.txt" &>/dev/null; then
+  # хвостовые пробелы в выводе ip route зависят от версии iproute2
+  if diff -q <(eval "$2" | sed 's/[[:space:]]*$//') <(etalon "$1") &>/dev/null; then
     ok "эталон: $3"
   else
     fail "эталон: $3 — расходится"

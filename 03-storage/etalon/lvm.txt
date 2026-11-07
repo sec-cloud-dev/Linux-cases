@@ -1,0 +1,7 @@
+  PV         VG      PSize   
+  md/data vg_data 4088,00m
+  VG      #PV #LV #SN VSize    VFree   
+  vg_data   1   2   0 4088,00m 1328,00m
+  LV      VG      LSize    Attr      
+  lv_db   vg_data 1536,00m -wi-ao----
+  lv_logs vg_data 1224,00m -wi-ao----

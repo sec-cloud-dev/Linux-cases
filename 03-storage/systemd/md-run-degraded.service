@@ -1,0 +1,13 @@
+[Unit]
+Description=Start md arrays left inactive by initramfs (degraded boot)
+DefaultDependencies=no
+After=systemd-udev-trigger.service
+Before=cryptsetup-pre.target local-fs-pre.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/md-run-degraded.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target

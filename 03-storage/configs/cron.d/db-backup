@@ -1,0 +1,1 @@
+17 3 * * * backup sudo -n /usr/local/bin/db-backup.sh >/dev/null 2>&1

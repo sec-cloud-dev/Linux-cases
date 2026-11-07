@@ -1,0 +1,31 @@
+/dev/md/data:
+           Version : 1.2
+     Creation Time : Sun Nov  1 09:40:27 2026
+        Raid Level : raid10
+        Array Size : 4188160 (3.99 GiB 4.29 GB)
+     Used Dev Size : 2094080 (2045.00 MiB 2144.34 MB)
+      Raid Devices : 4
+     Total Devices : 5
+       Persistence : Superblock is persistent
+
+             State : clean 
+    Active Devices : 4
+   Working Devices : 5
+    Failed Devices : 0
+     Spare Devices : 1
+
+            Layout : near=2
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : server:data  (local to host server)
+              UUID : 8f4090d0:800ad381:05f9e4d6:73438606
+
+    Number   RaidDevice State
+       4   0      active sync set-A   VB3e07f20a-93b47e2e
+       5   1      active sync set-B   VB45f2e3b2-f3cd4c2b
+       2   2      active sync set-A   VBe9645f6d-6132352f
+       3   3      active sync set-B   VB4290d86c-a0e70666
+
+       6   -      spare   VBf57159af-69938a96

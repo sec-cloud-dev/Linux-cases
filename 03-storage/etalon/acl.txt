@@ -1,0 +1,15 @@
+# file: /srv/scanner/reports
+# owner: root
+# group: scanner
+# flags: -s-
+user::rwx
+user:auditor:r-x
+group::rwx
+mask::rwx
+other::---
+default:user::rwx
+default:user:auditor:r-x
+default:group::rwx
+default:mask::rwx
+default:other::---
+

@@ -1,0 +1,2 @@
+# <target name>	<source device>		<key file>	<options>
+db_crypt UUID=6821cb8f-9b9b-42c0-a65c-3a39263ec4c6 /etc/luks-keys/db.key luks

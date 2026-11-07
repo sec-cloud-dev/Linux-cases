@@ -1,0 +1,7 @@
+/dev/disk/by-uuid/d3228ddf-6b7b-464c-8099-e561f4bbe2f9 / ext4 defaults 0 1
+UUID=26436d3b-8568-45c4-a8d3-8837ce40c09a /var/lib/postgresql xfs noatime,nosuid,nodev 0 0
+UUID=90846405-9873-465e-8867-83d6e6372df1 /srv/scanner ext4 noatime,nosuid,nodev,noexec 0 2
+UUID=37f9901a-fb7b-467d-876b-f59728b732f1 /backup ext4 noatime,nosuid,nodev,noexec,nofail 0 2
+tmpfs /tmp tmpfs size=512M,mode=1777,nosuid,nodev 0 0
+---
+db_crypt UUID=6821cb8f-9b9b-42c0-a65c-3a39263ec4c6 /etc/luks-keys/db.key luks

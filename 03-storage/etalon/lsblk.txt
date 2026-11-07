@@ -1,0 +1,30 @@
+VB1de40a8f-d5c6142a            disk
+`-VB1de40a8f-d5c6142a-part1    part    ext4               37f9901a-fb7b-467d-876b-f59728b732f1   /backup
+VB3a7a4dcb-2b9dcdfb            disk
+|-VB3a7a4dcb-2b9dcdfb-part1    part
+`-VB3a7a4dcb-2b9dcdfb-part2    part    ext4               d3228ddf-6b7b-464c-8099-e561f4bbe2f9   /
+VB3e07f20a-93b47e2e            disk    linux_raid_member  8f4090d0-800a-d381-05f9-e4d673438606
+`-md/data                      raid10  LVM2_member        5Kp1eX-e3Bq-R6RE-D2Yt-veMG-BcL5-MFxuEx
+  |-vg_data-lv_db              lvm     crypto_LUKS        6821cb8f-9b9b-42c0-a65c-3a39263ec4c6
+  | `-db_crypt                 crypt   xfs                26436d3b-8568-45c4-a8d3-8837ce40c09a   /var/lib/postgresql
+  `-vg_data-lv_logs            lvm     ext4               90846405-9873-465e-8867-83d6e6372df1   /srv/scanner
+VB4290d86c-a0e70666            disk    linux_raid_member  8f4090d0-800a-d381-05f9-e4d673438606
+`-md/data                      raid10  LVM2_member        5Kp1eX-e3Bq-R6RE-D2Yt-veMG-BcL5-MFxuEx
+  |-vg_data-lv_db              lvm     crypto_LUKS        6821cb8f-9b9b-42c0-a65c-3a39263ec4c6
+  | `-db_crypt                 crypt   xfs                26436d3b-8568-45c4-a8d3-8837ce40c09a   /var/lib/postgresql
+  `-vg_data-lv_logs            lvm     ext4               90846405-9873-465e-8867-83d6e6372df1   /srv/scanner
+VB45f2e3b2-f3cd4c2b            disk    linux_raid_member  8f4090d0-800a-d381-05f9-e4d673438606
+`-md/data                      raid10  LVM2_member        5Kp1eX-e3Bq-R6RE-D2Yt-veMG-BcL5-MFxuEx
+  |-vg_data-lv_db              lvm     crypto_LUKS        6821cb8f-9b9b-42c0-a65c-3a39263ec4c6
+  | `-db_crypt                 crypt   xfs                26436d3b-8568-45c4-a8d3-8837ce40c09a   /var/lib/postgresql
+  `-vg_data-lv_logs            lvm     ext4               90846405-9873-465e-8867-83d6e6372df1   /srv/scanner
+VBe9645f6d-6132352f            disk    linux_raid_member  8f4090d0-800a-d381-05f9-e4d673438606
+`-md/data                      raid10  LVM2_member        5Kp1eX-e3Bq-R6RE-D2Yt-veMG-BcL5-MFxuEx
+  |-vg_data-lv_db              lvm     crypto_LUKS        6821cb8f-9b9b-42c0-a65c-3a39263ec4c6
+  | `-db_crypt                 crypt   xfs                26436d3b-8568-45c4-a8d3-8837ce40c09a   /var/lib/postgresql
+  `-vg_data-lv_logs            lvm     ext4               90846405-9873-465e-8867-83d6e6372df1   /srv/scanner
+VBf57159af-69938a96            disk    linux_raid_member  8f4090d0-800a-d381-05f9-e4d673438606
+`-md/data                      raid10  LVM2_member        5Kp1eX-e3Bq-R6RE-D2Yt-veMG-BcL5-MFxuEx
+  |-vg_data-lv_db              lvm     crypto_LUKS        6821cb8f-9b9b-42c0-a65c-3a39263ec4c6
+  | `-db_crypt                 crypt   xfs                26436d3b-8568-45c4-a8d3-8837ce40c09a   /var/lib/postgresql
+  `-vg_data-lv_logs            lvm     ext4               90846405-9873-465e-8867-83d6e6372df1   /srv/scanner

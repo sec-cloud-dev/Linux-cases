@@ -16,7 +16,7 @@
 |---|---|---|---|
 | **01 — Защищённая среда** | Пользователи, изоляция home, `/srv/project`, ACL, `rbash`, Docker `FROM scratch`, sudo | [ТЗ](01-secured-environment/TZ.md) · [видео ~6:38](01-secured-environment/block-1.mp4) | — |
 | **02 — Сетевая архитектура** | netns `dev-router`, bonding/bridge, PBR, nftables, WireGuard | [ТЗ](02-network-architecture/TZ.md) · [видео ~19 мин](02-network-architecture/block-2.mp4) | [разбор](02-network-architecture/troubleshooting/README.md) · [видео 13:19](https://github.com/sec-cloud-dev/Linux-cases/releases/tag/block2-troubleshooting) |
-| **03 — Хранилище** | RAID-10 + hot spare, LVM, LUKS2, XFS, PostgreSQL, бэкап со снапшотов LVM, NFSv4 | [ТЗ](03-storage/TZ.md) · [разбор](03-storage/README.md) · [видео 1:32:23](https://github.com/sec-cloud-dev/Linux-cases/releases/tag/block3-storage) | — |
+| **03 — Хранилище** | RAID-10 + hot spare, LVM, LUKS2, XFS, PostgreSQL, бэкап со снапшотов LVM, NFSv4 | [ТЗ](03-storage/TZ.md) · [разбор](03-storage/README.md) · [видео 1:32:23](03-storage/block-3.mp4) | — |
 
 Гифки лежат рядом с README каждого блока — на GitHub открываются прямо в файле. Условия кейса — в `TZ.md` внутри папки блока.
 
@@ -46,6 +46,7 @@ Linux-cases/
 └── 03-storage/
     ├── TZ.md
     ├── README.md
+    ├── block-3.mp4
     ├── scripts/           db-backup.sh, verify-storage.sh, md-*.sh, disk2.sh (хост)
     ├── systemd/           md-run-degraded.service
     ├── docker/            Dockerfile scanner:v2

@@ -1,0 +1,4 @@
+/var/lib/postgresql /dev/mapper/db_crypt xfs    rw,nosuid,nodev,noatime,attr2,inode64,logbufs=8,logbsize=32k,sunit=1024,swidth=2048,noquota
+/srv/scanner /dev/mapper/vg_data-lv_logs ext4   rw,nosuid,nodev,noexec,noatime,stripe=256
+/backup VB1de40a8f-d5c6142a-part1 ext4   rw,nosuid,nodev,noexec,noatime
+/tmp   tmpfs  tmpfs  rw,nosuid,nodev,relatime,size=524288k,inode64

@@ -1,0 +1,31 @@
+# mdadm.conf
+HOMEHOST <system>
+PROGRAM /usr/local/bin/md-alert.sh
+ARRAY /dev/md/data metadata=1.2 spares=1 UUID=8f4090d0:800ad381:05f9e4d6:73438606
+# nfs.conf
+[general]
+ pipefs-directory = /run/rpc_pipefs
+
+[mountd]
+ manage-gids = y
+
+[nfsd]
+ vers3 = n
+# cron.d, sudoers.d
+/etc/cron.d/db-backup root:root 644
+/etc/cron.d/e2scrub_all root:root 644
+/etc/cron.d/.placeholder root:root 644
+/etc/cron.d/sysstat root:root 644
+/etc/sudoers.d/backup root:root 440
+/etc/sudoers.d/README root:root 440
+17 3 * * * backup sudo -n /usr/local/bin/db-backup.sh >/dev/null 2>&1$
+
+# postgresql start.conf
+auto
+# docker
+/bucket-scanner unless-stopped 10001:1008
+# права
+/srv/scanner root:root 755
+/srv/scanner/reports root:scanner 2770
+/srv/scanner/reports/scanner.log scanner-svc:scanner 660
+/usr/local/bin/db-backup.sh root:root 755

@@ -1,0 +1,2 @@
+User backup may run the following commands on server:
+    (root) NOPASSWD: /usr/local/bin/db-backup.sh ""
